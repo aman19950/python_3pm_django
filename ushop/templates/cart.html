@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}
+{% load cart %}
+Cart Page
+{% endblock title %}
+
+{% block body %}
+
+<div class="container my-3">
+    <table class="table table-success table-striped">
+        <tr class="text-center">
+            <th> Sno.</th>
+            <th>Product image</th>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total price</th>
+        </tr>
+        {% for p in product_details %}
+        <tr class="text-center">
+            <td>{{forloop.counter}}</td>
+            <td>
+                <img src="{{p.product_image.url}}" alt="" width=50 height=50>
+            </td>
+            <td>
+                {{p.product_name}}
+            </td>
+            <td>
+               Rs. {{p.product_price}}
+            </td>
+            <td>
+                {{p|cartquantity:request.session.cart}}
+            </td>
+            <td>
+                Rs.{{p|total_price:request.session.cart}}
+            </td>
+        </tr>
+       
+        
+        {% endfor %}
+         <tr class="text-center">
+            <td colspan=4>
+                <h3>Payable Amount</h3>
+            </td>
+            <td>
+                Rs.{{product_details|payable_amount:request.session.cart}}
+            </td>
+            <td>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Checkout</button>
+            </td>
+        </tr>
+  
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url "checkout" %}" method="post">
+            {% csrf_token %}
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Address</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" name="address" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">mobile</label>
+            <input type="number" name="mobile" class="form-control" id="exampleInputPassword1">
+        </div>
+        {% if request.session.name %}
+                <button type="submit" class="btn btn-primary">order</button>
+        {% else %}
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#login">Login</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#signup">Signup</button>
+        {% endif %}
+        </form>
+      </div>
+     
+    </div>
+  </div>
+</div>
+{% endblock body %}
